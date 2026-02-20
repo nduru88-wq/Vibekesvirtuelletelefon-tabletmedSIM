@@ -1,316 +1,227 @@
 <!doctype html>
 <html lang="da">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ring</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Ring</title>
 
-  <!-- iPhone hjemmeskærm ikon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="telefon.png" />
-  <link rel="apple-touch-icon" href="telefon.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Ring" />
-  <link rel="icon" href="telefon.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="telefon.png" />
+<link rel="apple-touch-icon" href="telefon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Ring" />
+<link rel="icon" href="telefon.png" />
 
-  <style>
-    :root{
-      --bg:#0b1220;
-      --card:rgba(255,255,255,.08);
-      --card2:rgba(255,255,255,.12);
-      --text:#fff;
-      --muted:rgba(255,255,255,.75);
-      --stroke:rgba(255,255,255,.12);
-      --radius:20px;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
+<style>
+:root{
+  --bg:#0b1220;
+  --text:#fff;
+  --muted:rgba(255,255,255,.85);
+  --stroke:rgba(255,255,255,.15);
+  --radius:20px;
+  --shadow:0 8px 25px rgba(0,0,0,.35);
+  --gap:14px;
+  --pad:14px;
+}
 
-      /* Tablet-venlige størrelser */
-      --gap:14px;
-      --pad:14px;
-      --max:1200px;
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  overflow:hidden;
+}
 
-      /* Kort + avatar */
-      --cardMinH:140px;
-      --avatarSize:92px;
-    }
+body{
+  background:
+    radial-gradient(1200px 800px at 50% 0%, rgba(80,140,255,.25), transparent 55%),
+    radial-gradient(900px 600px at 10% 90%, rgba(0,255,170,.10), transparent 55%),
+    var(--bg);
+  color:var(--text);
+}
 
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    body{
-      background:
-        radial-gradient(1200px 800px at 50% 0%, rgba(80,140,255,.22), transparent 55%),
-        radial-gradient(900px 600px at 10% 90%, rgba(0,255,170,.10), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      overflow:hidden; /* vigtigt: vi vil ikke scrolle */
-    }
+.page{
+  height:100%;
+  padding:var(--pad);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
-    .page{
-      height:100%;
-      padding:calc(var(--pad) + env(safe-area-inset-top)) var(--pad) calc(var(--pad) + env(safe-area-inset-bottom));
-      display:flex;
-      justify-content:center;
-      align-items:stretch;
-    }
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
 
-    .wrap{
-      width:100%;
-      max-width:var(--max);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height:0; /* så grid kan være fleks */
-    }
+.topIcon{
+  width:55px;
+  height:55px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  display:grid;
+  place-items:center;
+}
+.topIcon img{width:70%;height:70%;object-fit:contain}
 
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:14px;
-      padding:8px 10px;
-      flex:0 0 auto;
-    }
+h1{
+  margin:0;
+  font-size:clamp(20px,2.5vw,30px);
+}
 
-    .topIcon{
-      width:58px;
-      height:58px;
-      border-radius:16px;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--stroke);
-      box-shadow:var(--shadow);
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-    }
-    .topIcon img{width:72%;height:72%;object-fit:contain}
+.grid{
+  flex:1;
+  display:grid;
+  gap:var(--gap);
+  grid-template-columns:repeat(2,1fr);
+  grid-auto-rows:1fr;
+}
 
-    .titles{display:flex;flex-direction:column;align-items:center;gap:2px}
-    h1{
-      margin:0;
-      font-size:clamp(20px,2.4vw,30px);
-      line-height:1.1;
-    }
-    .hint{
-      margin:0;
-      color:var(--muted);
-      font-size:clamp(13px,1.6vw,16px);
-      text-align:center;
-    }
+/* 4x2 layout i landscape */
+@media (min-width:900px) and (orientation:landscape){
+  .grid{grid-template-columns:repeat(4,1fr);}
+}
 
-    /* Grid: fylder resten af skærmen uden scroll */
-    .grid{
-      flex:1 1 auto;
-      min-height:0;
-      display:grid;
-      gap:var(--gap);
+.card{
+  position:relative;
+  border-radius:var(--radius);
+  overflow:hidden;
+  text-decoration:none;
+  color:white;
+  box-shadow:var(--shadow);
+  border:1px solid var(--stroke);
+  display:flex;
+}
 
-      /* default (smalt): 2 kolonner */
-      grid-template-columns:repeat(2, 1fr);
+.card img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-      /* gør rækkerne “lige store” så alt kan være på skærmen */
-      grid-auto-rows:1fr;
-      align-content:stretch;
-    }
+/* Bund-overlay */
+.meta{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:10px 8px;
+  background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.0));
+  text-align:center;
+}
 
-    /* Tablet landscape: 4x2 */
-    @media (min-width: 900px) and (orientation: landscape){
-      .grid{ grid-template-columns:repeat(4, 1fr); }
-    }
+.name{
+  margin:0;
+  font-weight:800;
+  font-size:clamp(15px,1.6vw,20px);
+}
 
-    /* Hvis der stadig er lidt trangt: reducer en smule */
-    @media (max-height: 520px){
-      :root{
-        --gap:12px;
-        --cardMinH:128px;
-        --avatarSize:84px;
-      }
-      .topIcon{width:52px;height:52px}
-    }
+.phone{
+  margin:2px 0 6px 0;
+  font-size:clamp(12px,1.3vw,14px);
+  color:var(--muted);
+}
 
-    .card{
-      text-decoration:none;
-      color:inherit;
-      background:linear-gradient(180deg,var(--card2),var(--card));
-      border:1px solid var(--stroke);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:12px;
-      display:grid;
-      grid-template-rows:auto auto;
-      gap:8px;
-      min-height:var(--cardMinH);
-      -webkit-tap-highlight-color:transparent;
-      touch-action:manipulation;
-      user-select:none;
-    }
-    .card:active{transform:scale(.985)}
+.callTag{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(0,255,170,.85);
+  color:#000;
+  font-weight:800;
+  font-size:clamp(12px,1.2vw,14px);
+}
 
-    .avatar{
-      width:var(--avatarSize);
-      height:var(--avatarSize);
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid var(--stroke);
-      display:grid;
-      place-items:center;
-      margin:0 auto;
-      overflow:hidden;
-    }
-    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
-
-    .initial{
-      font-size:clamp(34px,3.4vw,48px);
-      font-weight:800;
-    }
-
-    .meta{text-align:center; line-height:1.05}
-    .name{
-      margin:0;
-      font-size:clamp(16px,1.8vw,22px);
-      font-weight:800;
-    }
-    .phone{
-      margin:4px 0 0;
-      color:rgba(255,255,255,.78);
-      font-size:clamp(12px,1.4vw,15px);
-    }
-
-    .callTag{
-      margin:8px auto 0;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 12px;
-      border-radius:999px;
-      background:rgba(0,255,170,.12);
-      border:1px solid rgba(0,255,170,.25);
-      font-weight:800;
-      letter-spacing:.3px;
-      font-size:clamp(12px,1.4vw,14px);
-    }
-    .dot{width:10px;height:10px;border-radius:50%;background:rgba(0,255,170,.9)}
-  </style>
+.card:active{
+  transform:scale(.97);
+}
+</style>
 </head>
 
 <body>
-<div class="page"><div class="wrap">
+<div class="page">
 
-  <header class="header">
+  <div class="header">
     <div class="topIcon"><img src="telefon.png" alt=""></div>
-    <div class="titles">
-      <h1>Ring</h1>
-      <p class="hint">Tryk på et billede for at ringe</p>
-    </div>
-  </header>
+    <h1>Ring</h1>
+  </div>
 
-  <main class="grid">
+  <div class="grid">
 
-    <!-- Peter -->
     <a class="card" href="tel:+4520324378">
-      <div class="avatar">
-        <img src="peter.jpg" alt="Peter"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>P</div>';">
-      </div>
+      <img src="peter.jpg" alt="Peter">
       <div class="meta">
         <p class="name">Peter</p>
         <p class="phone">+45 20 32 43 78</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Poula -->
     <a class="card" href="tel:+4521538213">
-      <div class="avatar">
-        <img src="poula.jpg" alt="Poula"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>P</div>';">
-      </div>
+      <img src="poula.jpg" alt="Poula">
       <div class="meta">
         <p class="name">Poula</p>
         <p class="phone">+45 21 53 82 13</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Bente -->
     <a class="card" href="tel:+4528223687">
-      <div class="avatar">
-        <img src="bente.jpg" alt="Bente"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>B</div>';">
-      </div>
+      <img src="bente.jpg" alt="Bente">
       <div class="meta">
         <p class="name">Bente</p>
         <p class="phone">+45 28 22 36 87</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Britta -->
     <a class="card" href="tel:+4523985223">
-      <div class="avatar">
-        <img src="britta.jpg" alt="Britta"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>B</div>';">
-      </div>
+      <img src="britta.jpg" alt="Britta">
       <div class="meta">
         <p class="name">Britta</p>
         <p class="phone">+45 23 98 52 23</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Else -->
     <a class="card" href="tel:+4542769137">
-      <div class="avatar">
-        <img src="else.jpg" alt="Else"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>E</div>';">
-      </div>
+      <img src="else.jpg" alt="Else">
       <div class="meta">
         <p class="name">Else</p>
         <p class="phone">+45 42 76 91 37</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Herdis -->
     <a class="card" href="tel:+4521764268">
-      <div class="avatar">
-        <img src="herdis.jpg" alt="Herdis"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>H</div>';">
-      </div>
+      <img src="herdis.jpg" alt="Herdis">
       <div class="meta">
         <p class="name">Herdis</p>
         <p class="phone">+45 21 76 42 68</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Inge Boye (anbefalet: omdøb fil til inge-boye.jpg) -->
     <a class="card" href="tel:+4522355339">
-      <div class="avatar">
-        <img src="inge-boye.jpg" alt="Inge Boye"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>I</div>';">
-      </div>
+      <img src="inge-boye.jpg" alt="Inge Boye">
       <div class="meta">
         <p class="name">Inge Boye</p>
         <p class="phone">+45 22 35 53 39</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-    <!-- Karen -->
     <a class="card" href="tel:+4541663491">
-      <div class="avatar">
-        <img src="karen.jpg" alt="Karen"
-             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>K</div>';">
-      </div>
+      <img src="karen.jpg" alt="Karen">
       <div class="meta">
         <p class="name">Karen</p>
         <p class="phone">+45 41 66 34 91</p>
-        <div class="callTag"><span class="dot"></span> RING</div>
+        <div class="callTag">RING</div>
       </div>
     </a>
 
-  </main>
-
-</div></div>
+  </div>
+</div>
 </body>
 </html>
