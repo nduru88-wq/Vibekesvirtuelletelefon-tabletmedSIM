@@ -1,227 +1,324 @@
 <!doctype html>
 <html lang="da">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Ring</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ring</title>
 
-<link rel="apple-touch-icon" sizes="180x180" href="telefon.png" />
-<link rel="apple-touch-icon" href="telefon.png" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Ring" />
-<link rel="icon" href="telefon.png" />
+  <!-- iPhone hjemmeskærm ikon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="telefon.png" />
+  <link rel="apple-touch-icon" href="telefon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Ring" />
+  <link rel="icon" href="telefon.png" />
 
-<style>
-:root{
-  --bg:#0b1220;
-  --text:#fff;
-  --muted:rgba(255,255,255,.85);
-  --stroke:rgba(255,255,255,.15);
-  --radius:20px;
-  --shadow:0 8px 25px rgba(0,0,0,.35);
-  --gap:14px;
-  --pad:14px;
-}
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#fff;
+      --muted:rgba(255,255,255,.78);
+      --stroke:rgba(255,255,255,.14);
+      --radius:18px;
+      --shadow:0 10px 26px rgba(0,0,0,.35);
 
-*{box-sizing:border-box}
-html,body{
-  height:100%;
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-  overflow:hidden;
-}
+      /* lidt mere kompakt så intet klippes */
+      --gap:12px;
+      --pad:12px;
 
-body{
-  background:
-    radial-gradient(1200px 800px at 50% 0%, rgba(80,140,255,.25), transparent 55%),
-    radial-gradient(900px 600px at 10% 90%, rgba(0,255,170,.10), transparent 55%),
-    var(--bg);
-  color:var(--text);
-}
+      --avatar:104px;         /* større end før, men ikke “full cover” */
+      --cardPad:10px;
+      --tagPadY:7px;
+      --tagPadX:12px;
+    }
 
-.page{
-  height:100%;
-  padding:var(--pad);
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+    *{box-sizing:border-box}
+    html,body{
+      height:100%;
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    }
 
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-}
+    body{
+      background:
+        radial-gradient(1200px 800px at 50% 0%, rgba(80,140,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 10% 90%, rgba(0,255,170,.10), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      overflow:hidden; /* ingen scroll */
+    }
 
-.topIcon{
-  width:55px;
-  height:55px;
-  border-radius:14px;
-  background:rgba(255,255,255,.08);
-  display:grid;
-  place-items:center;
-}
-.topIcon img{width:70%;height:70%;object-fit:contain}
+    .page{
+      height:100%;
+      padding:calc(var(--pad) + env(safe-area-inset-top)) var(--pad) calc(var(--pad) + env(safe-area-inset-bottom));
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-h1{
-  margin:0;
-  font-size:clamp(20px,2.5vw,30px);
-}
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      flex:0 0 auto;
+      padding:6px 6px 0;
+    }
 
-.grid{
-  flex:1;
-  display:grid;
-  gap:var(--gap);
-  grid-template-columns:repeat(2,1fr);
-  grid-auto-rows:1fr;
-}
+    .topIcon{
+      width:52px;
+      height:52px;
+      border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--stroke);
+      display:grid;
+      place-items:center;
+      box-shadow:var(--shadow);
+    }
+    .topIcon img{width:70%;height:70%;object-fit:contain}
 
-/* 4x2 layout i landscape */
-@media (min-width:900px) and (orientation:landscape){
-  .grid{grid-template-columns:repeat(4,1fr);}
-}
+    .titles{display:flex;flex-direction:column;align-items:center;gap:2px}
+    h1{
+      margin:0;
+      font-size:clamp(20px,2.4vw,28px);
+      line-height:1.1;
+    }
+    .hint{
+      margin:0;
+      font-size:clamp(12px,1.4vw,15px);
+      color:var(--muted);
+      text-align:center;
+    }
 
-.card{
-  position:relative;
-  border-radius:var(--radius);
-  overflow:hidden;
-  text-decoration:none;
-  color:white;
-  box-shadow:var(--shadow);
-  border:1px solid var(--stroke);
-  display:flex;
-}
+    .grid{
+      flex:1 1 auto;
+      min-height:0;
+      display:grid;
+      gap:var(--gap);
+      grid-template-columns:repeat(2,1fr);
+      grid-auto-rows:1fr;
+      align-content:stretch;
+    }
 
-.card img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
+    /* 4x2 i landscape på tablet */
+    @media (min-width: 900px) and (orientation: landscape){
+      .grid{ grid-template-columns:repeat(4, 1fr); }
+    }
 
-/* Bund-overlay */
-.meta{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:10px 8px;
-  background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.0));
-  text-align:center;
-}
+    /* hvis den er lav i højden, skru lige lidt ned */
+    @media (max-height: 520px){
+      :root{
+        --avatar:96px;
+        --gap:10px;
+        --pad:10px;
+        --cardPad:9px;
+        --tagPadY:6px;
+        --tagPadX:10px;
+      }
+      .topIcon{width:48px;height:48px}
+    }
 
-.name{
-  margin:0;
-  font-weight:800;
-  font-size:clamp(15px,1.6vw,20px);
-}
+    .card{
+      text-decoration:none;
+      color:inherit;
+      border-radius:var(--radius);
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+      padding:var(--cardPad);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      gap:8px;
+      min-height:0;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
+      user-select:none;
 
-.phone{
-  margin:2px 0 6px 0;
-  font-size:clamp(12px,1.3vw,14px);
-  color:var(--muted);
-}
+      /* farvekode pr person via --accent */
+      outline:2px solid rgba(255,255,255,.03);
+    }
+    .card:active{ transform:scale(.985); }
 
-.callTag{
-  display:inline-block;
-  padding:6px 12px;
-  border-radius:999px;
-  background:rgba(0,255,170,.85);
-  color:#000;
-  font-weight:800;
-  font-size:clamp(12px,1.2vw,14px);
-}
+    .avatar{
+      width:var(--avatar);
+      height:var(--avatar);
+      border-radius:999px;
+      overflow:hidden;
+      border:3px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,.32),
+        0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent),
+        0 0 26px color-mix(in srgb, var(--accent) 35%, transparent);
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .initial{font-size:48px;font-weight:900}
 
-.card:active{
-  transform:scale(.97);
-}
-</style>
+    .meta{
+      width:100%;
+      text-align:center;
+      margin-top:auto;           /* skubber info ned, så den altid ligger i bunden */
+      padding-top:2px;
+    }
+
+    .name{
+      margin:0;
+      font-size:clamp(15px,1.8vw,21px);
+      font-weight:900;
+      line-height:1.05;
+    }
+    .phone{
+      margin:4px 0 8px;
+      font-size:clamp(12px,1.3vw,14px);
+      color:var(--muted);
+      line-height:1.05;
+    }
+
+    .callTag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:var(--tagPadY) var(--tagPadX);
+      border-radius:999px;
+      font-weight:900;
+      font-size:clamp(12px,1.25vw,14px);
+      letter-spacing:.3px;
+      background:color-mix(in srgb, var(--accent) 26%, rgba(255,255,255,.08));
+      border:1px solid color-mix(in srgb, var(--accent) 48%, rgba(255,255,255,.14));
+      color:#fff;
+      box-shadow:0 8px 18px rgba(0,0,0,.25);
+    }
+    .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 12px color-mix(in srgb, var(--accent) 70%, transparent);
+    }
+  </style>
 </head>
 
 <body>
 <div class="page">
 
-  <div class="header">
+  <header class="header">
     <div class="topIcon"><img src="telefon.png" alt=""></div>
-    <h1>Ring</h1>
-  </div>
+    <div class="titles">
+      <h1>Ring</h1>
+      <p class="hint">Tryk på et billede for at ringe</p>
+    </div>
+  </header>
 
-  <div class="grid">
+  <main class="grid">
 
-    <a class="card" href="tel:+4520324378">
-      <img src="peter.jpg" alt="Peter">
+    <!-- Peter -->
+    <a class="card" style="--accent:#ffd24a" href="tel:+4520324378">
+      <div class="avatar">
+        <img src="peter.jpg" alt="Peter"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>P</div>';">
+      </div>
       <div class="meta">
         <p class="name">Peter</p>
         <p class="phone">+45 20 32 43 78</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4521538213">
-      <img src="poula.jpg" alt="Poula">
+    <!-- Poula -->
+    <a class="card" style="--accent:#54e6a9" href="tel:+4521538213">
+      <div class="avatar">
+        <img src="poula.jpg" alt="Poula"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>P</div>';">
+      </div>
       <div class="meta">
         <p class="name">Poula</p>
         <p class="phone">+45 21 53 82 13</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4528223687">
-      <img src="bente.jpg" alt="Bente">
+    <!-- Bente -->
+    <a class="card" style="--accent:#6fb7ff" href="tel:+4528223687">
+      <div class="avatar">
+        <img src="bente.jpg" alt="Bente"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>B</div>';">
+      </div>
       <div class="meta">
         <p class="name">Bente</p>
         <p class="phone">+45 28 22 36 87</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4523985223">
-      <img src="britta.jpg" alt="Britta">
+    <!-- Britta -->
+    <a class="card" style="--accent:#ff7ad9" href="tel:+4523985223">
+      <div class="avatar">
+        <img src="britta.jpg" alt="Britta"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>B</div>';">
+      </div>
       <div class="meta">
         <p class="name">Britta</p>
         <p class="phone">+45 23 98 52 23</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4542769137">
-      <img src="else.jpg" alt="Else">
+    <!-- Else -->
+    <a class="card" style="--accent:#ff9b54" href="tel:+4542769137">
+      <div class="avatar">
+        <img src="else.jpg" alt="Else"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>E</div>';">
+      </div>
       <div class="meta">
         <p class="name">Else</p>
         <p class="phone">+45 42 76 91 37</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4521764268">
-      <img src="herdis.jpg" alt="Herdis">
+    <!-- Herdis -->
+    <a class="card" style="--accent:#b58cff" href="tel:+4521764268">
+      <div class="avatar">
+        <img src="herdis.jpg" alt="Herdis"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>H</div>';">
+      </div>
       <div class="meta">
         <p class="name">Herdis</p>
         <p class="phone">+45 21 76 42 68</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4522355339">
-      <img src="inge-boye.jpg" alt="Inge Boye">
+    <!-- Hanne (tidl. Inge Boye) -->
+    <a class="card" style="--accent:#ff4d4d" href="tel:+4528965403">
+      <div class="avatar">
+        <img src="hanne.jpg" alt="Hanne"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>H</div>';">
+      </div>
       <div class="meta">
-        <p class="name">Inge Boye</p>
-        <p class="phone">+45 22 35 53 39</p>
-        <div class="callTag">RING</div>
+        <p class="name">Hanne</p>
+        <p class="phone">+45 28 96 54 03</p>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-    <a class="card" href="tel:+4541663491">
-      <img src="karen.jpg" alt="Karen">
+    <!-- Karen -->
+    <a class="card" style="--accent:#39d0ff" href="tel:+4541663491">
+      <div class="avatar">
+        <img src="karen.jpg" alt="Karen"
+             onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;initial&quot;>K</div>';">
+      </div>
       <div class="meta">
         <p class="name">Karen</p>
         <p class="phone">+45 41 66 34 91</p>
-        <div class="callTag">RING</div>
+        <div class="callTag"><span class="dot"></span> RING</div>
       </div>
     </a>
 
-  </div>
+  </main>
 </div>
 </body>
 </html>
