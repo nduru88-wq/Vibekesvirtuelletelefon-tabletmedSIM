@@ -1,1 +1,396 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Vibekes telefon</title>
 
+  <link rel="apple-touch-icon" sizes="180x180" href="telefon.png" />
+  <link rel="apple-touch-icon" href="telefon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Vibekes telefon" />
+  <link rel="icon" href="telefon.png" />
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#fff;
+      --muted:rgba(255,255,255,.78);
+      --stroke:rgba(255,255,255,.14);
+      --shadow:0 10px 26px rgba(0,0,0,.35);
+
+      --pad:12px;
+
+      /* række / tiles */
+      --tileW:min(20vw, 280px);
+      --tileH:min(72vh, 540px);
+      --gap:14px;
+
+      --avatar:220px;
+      --radius:22px;
+
+      /* fokus */
+      --focusScale:1.06;
+      --unfocusOpacity:.55;
+
+      /* “sikkerhed”: ring-knap er kun aktiv når tile er i fokus */
+      --btnH:56px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    body{
+      background:
+        radial-gradient(1200px 800px at 50% 0%, rgba(80,140,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 10% 90%, rgba(0,255,170,.10), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .page{
+      height:100%;
+      padding:var(--pad);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      justify-content:flex-start;
+    }
+
+    .header{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      padding-top:4px;
+      user-select:none;
+    }
+    .topIcon{
+      width:52px;height:52px;border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--stroke);
+      display:grid;place-items:center;
+      box-shadow:var(--shadow);
+      flex:0 0 auto;
+    }
+    .topIcon img{width:70%;height:70%;object-fit:contain}
+    h1{margin:0;font-size:clamp(18px,2.2vw,28px);letter-spacing:.2px;text-align:center}
+
+    .stage{
+      position:relative;
+      width:100%;
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    /* Rækken med tiles */
+    .rail{
+      position:relative;
+      width:min(1700px, 100%);
+      height:calc(var(--tileH) + 20px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:var(--gap);
+      padding:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      touch-action:none; /* til drag af fokus-firkanten */
+    }
+
+    .tile{
+      position:relative;
+      width:var(--tileW);
+      height:var(--tileH);
+      border-radius:var(--radius);
+      border:1px solid var(--stroke);
+      box-shadow:var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.07));
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      overflow:hidden;
+
+      opacity:var(--unfocusOpacity);
+      transform:scale(.96);
+      filter:saturate(.9);
+      transition:transform 220ms ease, opacity 220ms ease, filter 220ms ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tile.focused{
+      opacity:1;
+      transform:scale(var(--focusScale));
+      filter:saturate(1.05);
+    }
+
+    .avatar{
+      width:var(--avatar);
+      height:var(--avatar);
+      border-radius:999px;
+      overflow:hidden;
+      border:4px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.08);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,.32),
+        0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent),
+        0 0 40px color-mix(in srgb, var(--accent) 40%, transparent);
+      flex-shrink:0;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .meta{
+      width:100%;
+      text-align:center;
+      margin-top:auto;
+      padding:0 8px 4px;
+    }
+    .name{margin:0;font-size:24px;font-weight:950}
+    .phone{margin:4px 0 12px;font-size:16px;color:var(--muted)}
+
+    /* Ring-knap: kun aktiv i fokus (sikkerhed) */
+    .callBtn{
+      width:100%;
+      height:var(--btnH);
+      border-radius:16px;
+      border:1px solid color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.16));
+      background:color-mix(in srgb, var(--accent) 32%, rgba(255,255,255,.10));
+      color:#fff;
+      font-weight:950;
+      font-size:18px;
+      letter-spacing:.5px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+      opacity:.35;
+      pointer-events:none; /* default: kan ikke ringe */
+      transition:opacity 180ms ease, transform 120ms ease;
+    }
+    .callBtn:active{ transform:scale(.98); }
+    .tile.focused .callBtn{
+      opacity:1;
+      pointer-events:auto; /* først nu kan man ringe */
+    }
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+
+    /* Fokus-firkanten (kan trækkes) */
+    .focusBox{
+      position:absolute;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:calc(var(--tileW) + 10px);
+      height:calc(var(--tileH) + 10px);
+      border-radius:calc(var(--radius) + 6px);
+      border:3px solid rgba(255,255,255,.85);
+      box-shadow:
+        0 0 0 6px rgba(0,0,0,.25),
+        0 18px 60px rgba(0,0,0,.45);
+      pointer-events:none;
+    }
+
+    .hint{
+      position:absolute;
+      bottom:10px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:14px;
+      opacity:.6;
+      user-select:none;
+      text-align:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      backdrop-filter: blur(8px);
+      max-width:calc(100% - 24px);
+    }
+
+    /* Små landscape tablets */
+    @media (max-height:700px){
+      :root{
+        --tileH:min(66vh, 470px);
+        --avatar:200px;
+        --btnH:52px;
+      }
+      .name{font-size:22px}
+      .phone{font-size:15px}
+    }
+    @media (max-height:620px){
+      :root{
+        --tileH:min(62vh, 430px);
+        --avatar:185px;
+      }
+    }
+
+    /* Hvis skærmen er meget smal, tillad horisontal scroll */
+    @media (max-width:1100px){
+      .rail{
+        justify-content:flex-start;
+        overflow-x:auto;
+        scrollbar-width:none;
+      }
+      .rail::-webkit-scrollbar{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="header">
+      <div class="topIcon"><img src="telefon.png" alt=""></div>
+      <h1>Vibekes telefon</h1>
+      <div class="topIcon"><img src="telefon.png" alt=""></div>
+    </div>
+
+    <div class="stage">
+      <div class="rail" id="rail" aria-label="Kontakter">
+        <!-- tiles injected -->
+        <div class="focusBox" id="focusBox" aria-hidden="true"></div>
+      </div>
+
+      <div class="hint">Tryk på et billede for fokus • Træk den hvide ramme for at vælge • Ring-knappen virker kun i fokus</div>
+    </div>
+  </div>
+
+  <script>
+    // === DATA (dine 8 kontakter) ===
+    let contacts = [
+      { name:"Peter",  phone:"+4520324378", display:"+45 20 32 43 78", img:"peter.jpg",  accent:"#ffd24a" },
+      { name:"Poula",  phone:"+4521538213", display:"+45 21 53 82 13", img:"poula.jpg",  accent:"#54e6a9" },
+      { name:"Bente",  phone:"+4528223687", display:"+45 28 22 36 87", img:"bente.jpg",  accent:"#6fb7ff" },
+      { name:"Britta", phone:"+4523985223", display:"+45 23 98 52 23", img:"britta.jpg", accent:"#ff7ad9" },
+      { name:"Else",   phone:"+4542769137", display:"+45 42 76 91 37", img:"else.jpg",   accent:"#ff9b54" },
+      { name:"Herdis", phone:"+4521764268", display:"+45 21 76 42 68", img:"herdis.jpg", accent:"#b58cff" },
+      { name:"Hanne",  phone:"+4528965403", display:"+45 28 96 54 03", img:"hanne.jpg",  accent:"#ff4d4d" },
+      { name:"Karen",  phone:"+4541663491", display:"+45 41 66 34 91", img:"karen.jpg",  accent:"#39d0ff" },
+    ];
+
+    // ✅ Alfabetisk sortering (dansk/latin) — case-insensitive
+    contacts.sort((a,b) => a.name.localeCompare(b.name, "da", { sensitivity:"base" }));
+
+    const rail = document.getElementById("rail");
+    const focusBox = document.getElementById("focusBox");
+
+    const tiles = contacts.map((c, i) => {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      tile.style.setProperty("--accent", c.accent);
+      tile.dataset.index = String(i);
+
+      tile.innerHTML = `
+        <div class="avatar"><img src="${c.img}" alt="${c.name}"></div>
+        <div class="meta">
+          <p class="name">${c.name}</p>
+          <p class="phone">${c.display}</p>
+          <div class="callBtn" role="button" aria-label="Ring til ${c.name}">
+            <span class="dot"></span> RING
+          </div>
+        </div>
+      `;
+
+      tile.addEventListener("click", () => setFocus(i), {passive:true});
+
+      tile.querySelector(".callBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (focusedIndex === i) location.href = `tel:${c.phone}`;
+      });
+
+      rail.insertBefore(tile, focusBox);
+      return tile;
+    });
+
+    // Start fokus: Vibeke hvis hun findes, ellers første
+    let focusedIndex = Math.max(0, contacts.findIndex(c => c.name.toLowerCase() === "vibeke"));
+    let isDragging = false;
+    let startX = 0;
+    let startCenterX = 0;
+
+    function tileCenterX(tile){
+      const r = rail.getBoundingClientRect();
+      const t = tile.getBoundingClientRect();
+      return (t.left - r.left) + (t.width / 2);
+    }
+
+    function moveFocusBoxToTile(i){
+      const cX = tileCenterX(tiles[i]);
+      focusBox.style.left = `${cX}px`;
+    }
+
+    function setFocus(i){
+      focusedIndex = i;
+      tiles.forEach((t, idx) => t.classList.toggle("focused", idx === focusedIndex));
+      moveFocusBoxToTile(focusedIndex);
+      tiles[focusedIndex].scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+    }
+
+    function nearestTileIndex(x){
+      let best = 0, bestDist = Infinity;
+      for (let i=0;i<tiles.length;i++){
+        const cx = tileCenterX(tiles[i]);
+        const d = Math.abs(cx - x);
+        if (d < bestDist){ bestDist = d; best = i; }
+      }
+      return best;
+    }
+
+    function railPointerDown(e){
+      isDragging = true;
+      rail.setPointerCapture?.(e.pointerId);
+
+      const r = rail.getBoundingClientRect();
+      startX = e.clientX;
+      startCenterX = (focusBox.getBoundingClientRect().left - r.left) + (focusBox.getBoundingClientRect().width / 2);
+
+      const x = e.clientX - r.left;
+      setFocus(nearestTileIndex(x));
+      e.preventDefault?.();
+    }
+
+    function railPointerMove(e){
+      if (!isDragging) return;
+
+      const r = rail.getBoundingClientRect();
+      const dx = e.clientX - startX;
+      let newCenter = startCenterX + dx;
+
+      newCenter = Math.max(0, Math.min(r.width, newCenter));
+      focusBox.style.left = `${newCenter}px`;
+
+      const nearest = nearestTileIndex(newCenter);
+      tiles.forEach((t, idx) => t.classList.toggle("focused", idx === nearest));
+      focusedIndex = nearest;
+    }
+
+    function railPointerUp(){
+      if (!isDragging) return;
+      isDragging = false;
+      setFocus(focusedIndex);
+    }
+
+    rail.addEventListener("pointerdown", railPointerDown, {passive:false});
+    rail.addEventListener("pointermove", railPointerMove, {passive:true});
+    rail.addEventListener("pointerup", railPointerUp, {passive:true});
+    rail.addEventListener("pointercancel", railPointerUp, {passive:true});
+    rail.addEventListener("pointerleave", railPointerUp, {passive:true});
+
+    requestAnimationFrame(() => setFocus(focusedIndex));
+    window.addEventListener("resize", () => requestAnimationFrame(() => moveFocusBoxToTile(focusedIndex)));
+  </script>
+</body>
+</html>
