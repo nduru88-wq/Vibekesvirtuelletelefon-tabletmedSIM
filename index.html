@@ -22,7 +22,6 @@
 
       --pad:12px;
       --gap:14px;
-
       --radius:22px;
 
       /* Fokus */
@@ -66,11 +65,13 @@
       justify-content:flex-start;
     }
 
+    /* Header: centreret (grid) */
     .header{
       width:100%;
-      display:flex;
+      display:grid;
+      grid-template-columns: 52px 1fr 52px;
       align-items:center;
-      justify-content:center;
+      justify-items:center;
       gap:12px;
       padding-top:4px;
       user-select:none;
@@ -81,10 +82,15 @@
       border:1px solid var(--stroke);
       display:grid;place-items:center;
       box-shadow:var(--shadow);
-      flex:0 0 auto;
     }
     .topIcon img{width:70%;height:70%;object-fit:contain}
-    h1{margin:0;font-size:clamp(18px,2.2vw,28px);letter-spacing:.2px;text-align:center}
+    h1{
+      margin:0;
+      font-size:clamp(18px,2.2vw,28px);
+      letter-spacing:.2px;
+      text-align:center;
+      justify-self:center;
+    }
 
     .stage{
       position:relative;
@@ -96,7 +102,7 @@
       overflow:hidden;
     }
 
-    /* 3-kolonne layout: venstre små, midt stor, højre små */
+    /* 3-kolonne layout */
     .layout{
       position:relative;
       width:min(1600px, 100%);
@@ -179,6 +185,7 @@
         0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent),
         0 0 40px color-mix(in srgb, var(--accent) 40%, transparent);
       flex-shrink:0;
+      pointer-events:none;
     }
     .tile.big .avatar{
       width:var(--avatarBig);
@@ -191,14 +198,17 @@
       text-align:center;
       margin-top:auto;
       padding:0 8px 4px;
+      pointer-events:none;
     }
     .tile.big .meta{ margin-top:0; }
+
     .name{margin:0;font-size:clamp(18px, 2.2vh, 26px);font-weight:950}
     .tile.small .name{ font-size:clamp(16px, 2.0vh, 22px); }
+
     .phone{margin:4px 0 12px;font-size:clamp(13px, 1.8vh, 16px);color:var(--muted)}
     .tile.small .phone{ margin:3px 0 10px; font-size:clamp(12px, 1.6vh, 15px); }
 
-    /* Ring-knap: kun aktiv i fokus (sikkerhed) */
+    /* Ring-knap (Peter: klik på knappen) */
     .callBtn{
       width:100%;
       height:var(--btnHSmall);
@@ -214,22 +224,16 @@
       justify-content:center;
       gap:10px;
       user-select:none;
-
-      opacity:.35;
-      pointer-events:none; /* default: kan ikke ringe */
-      transition:opacity 180ms ease, transform 120ms ease;
+      opacity:.9;
     }
     .tile.big .callBtn{
       height:var(--btnH);
       font-size:18px;
       border-radius:18px;
+      pointer-events:auto;
+      opacity:1;
     }
     .callBtn:active{ transform:scale(.98); }
-    .tile.focused .callBtn{
-      opacity:1;
-      pointer-events:auto; /* først nu kan man ringe */
-      cursor:pointer;
-    }
     .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
 
     /* Fokusramme */
@@ -246,7 +250,83 @@
       z-index:50;
     }
 
-    /* Responsivt: hvis smal skærm, så stack (Peter øverst) */
+    /* === OVERLAY CONFIRM === */
+    .overlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.62);
+      z-index:9999;
+      padding:18px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .overlay.show{ display:flex; }
+
+    .dialog{
+      width:min(920px, 100%);
+      border-radius:28px;
+      border:2px solid rgba(255,255,255,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+      box-shadow:0 30px 80px rgba(0,0,0,.55);
+      padding:22px;
+      text-align:center;
+    }
+
+    .dialogTitle{
+      margin:0 0 10px;
+      font-weight:1000;
+      letter-spacing:.8px;
+      font-size:clamp(26px, 4.2vw, 52px);
+      text-transform:uppercase;
+    }
+    .dialogName{
+      margin:0 0 18px;
+      font-weight:1000;
+      font-size:clamp(22px, 3.4vw, 44px);
+      color:#fff;
+    }
+    .dialogHint{
+      margin:0 0 18px;
+      opacity:.85;
+      font-size:clamp(14px, 2.0vw, 20px);
+    }
+
+    .btnRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+    }
+
+    .bigBtn{
+      height:clamp(64px, 10vh, 96px);
+      border-radius:22px;
+      border:2px solid rgba(255,255,255,.18);
+      font-size:clamp(18px, 2.4vw, 30px);
+      font-weight:1000;
+      letter-spacing:.6px;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+      cursor:pointer;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bigBtn:active{ transform:scale(.99); }
+
+    .yes{
+      background:linear-gradient(180deg, rgba(0,255,140,.35), rgba(0,255,140,.18));
+      border-color:rgba(0,255,140,.55);
+    }
+    .no{
+      background:linear-gradient(180deg, rgba(255,60,60,.35), rgba(255,60,60,.18));
+      border-color:rgba(255,60,60,.55);
+    }
+
+    /* Responsivt */
     @media (max-width:1100px){
       .layout{
         grid-template-columns: 1fr;
@@ -254,7 +334,6 @@
       }
       .sideCol{ grid-template-rows:repeat(4, auto); }
     }
-
     @media (max-height:700px){
       :root{
         --btnH:52px;
@@ -281,8 +360,20 @@
         <div class="centerCol" id="centerCol" aria-label="Peter (center)"></div>
         <div class="sideCol" id="rightCol" aria-label="Højre kontakter"></div>
 
-        <!-- Fokusramme (ligger ovenpå alt) -->
         <div class="focusBox" id="focusBox" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm overlay -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
+      <p class="dialogTitle" id="dlgTitle">Vil du ringe til</p>
+      <p class="dialogName" id="dlgName">Navn</p>
+      <p class="dialogHint">Tryk <b>JA</b> for at ringe, eller <b>NEJ</b> for at fortryde.</p>
+      <div class="btnRow">
+        <div class="bigBtn yes" id="btnYes">JA, RING</div>
+        <div class="bigBtn no" id="btnNo">NEJ</div>
       </div>
     </div>
   </div>
@@ -301,7 +392,20 @@
       { name:"Inge Boye", phone:"+4522355339", display:"+45 22 35 53 39", img:"ingeboye.jpg",  accent:"#7cff6b" },
     ];
 
-    // Find Peter
+    const AUTO_BACK_MS = 10_000;
+
+    const leftCol  = document.getElementById("leftCol");
+    const rightCol = document.getElementById("rightCol");
+    const centerCol= document.getElementById("centerCol");
+    const layout   = document.getElementById("layout");
+    const focusBox = document.getElementById("focusBox");
+
+    // Overlay elements
+    const overlay  = document.getElementById("overlay");
+    const dlgName  = document.getElementById("dlgName");
+    const btnYes   = document.getElementById("btnYes");
+    const btnNo    = document.getElementById("btnNo");
+
     function indexOfPeter(){
       return Math.max(0, contacts.findIndex(c => c.name.toLowerCase() === "peter"));
     }
@@ -314,20 +418,59 @@
       .filter((_, i) => i !== peterIndex)
       .sort((a,b) => a.name.localeCompare(b.name, "da", { sensitivity:"base" }));
 
-    // 4 venstre + 4 højre (i alt 8)
-    const left = others.slice(0, 4);
+    const left  = others.slice(0, 4);
     const right = others.slice(4, 8);
 
-    const leftCol = document.getElementById("leftCol");
-    const rightCol = document.getElementById("rightCol");
-    const centerCol = document.getElementById("centerCol");
-    const layout = document.getElementById("layout");
-    const focusBox = document.getElementById("focusBox");
-
-    // Vi laver en samlet liste over tiles i fokus-rækkefølge:
-    // venstre (0-3), Peter (4), højre (5-8)
+    // Fokus rækkefølge: venstre (0-3), Peter (4), højre (5-8)
     const tileOrder = [];
+    const peterGlobalIndex = 4;
+    let focusedIndex = peterGlobalIndex;
 
+    // Auto-retur timer
+    let autoBackTimer = null;
+    function clearAutoBack(){
+      if (autoBackTimer) { clearTimeout(autoBackTimer); autoBackTimer = null; }
+    }
+    function scheduleAutoBackIfNeeded(){
+      clearAutoBack();
+      if (overlay.classList.contains("show")) return; // mens prompt er åben: ingen auto-hop
+      if (focusedIndex !== peterGlobalIndex) {
+        autoBackTimer = setTimeout(() => setFocusPeter(), AUTO_BACK_MS);
+      }
+    }
+
+    // Overlay state
+    let pendingCall = null; // { name, phone }
+    function openConfirm(c){
+      pendingCall = { name:c.name, phone:c.phone };
+      dlgName.textContent = c.name.toUpperCase();
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden", "false");
+      clearAutoBack();
+    }
+    function closeConfirm(){
+      pendingCall = null;
+      overlay.classList.remove("show");
+      overlay.setAttribute("aria-hidden", "true");
+      scheduleAutoBackIfNeeded();
+    }
+    function callNumber(phone){
+      location.href = `tel:${phone}`;
+    }
+
+    // Klik udenfor dialog = Nej
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) closeConfirm();
+    });
+    btnNo.addEventListener("click", closeConfirm);
+    btnYes.addEventListener("click", () => {
+      if (!pendingCall) return;
+      const phone = pendingCall.phone;
+      closeConfirm();
+      callNumber(phone);
+    });
+
+    // Build tiles
     function makeTile(c, globalIndex, sizeClass){
       const tile = document.createElement("div");
       tile.className = `tile ${sizeClass}`;
@@ -345,78 +488,99 @@
         </div>
       `;
 
-      tile.addEventListener("click", () => setFocus(globalIndex), { passive:true });
+      // Klik logik:
+      // - Små tiles: 1. klik = fokus. 2. klik = prompt "vil du ringe?"
+      // - Peter (big): ring på knappen (som før)
+      tile.addEventListener("click", () => {
+        if (overlay.classList.contains("show")) return;
 
-      tile.querySelector(".callBtn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        if (focusedIndex === globalIndex) {
-          location.href = `tel:${c.phone}`;
+        if (sizeClass === "small") {
+          if (focusedIndex === globalIndex) {
+            openConfirm(c);
+          } else {
+            setFocus(globalIndex);
+          }
+        } else {
+          // big (Peter)
+          if (focusedIndex !== globalIndex) setFocus(globalIndex);
         }
-      });
+      }, { passive:true });
+
+      const btn = tile.querySelector(".callBtn");
+
+      if (sizeClass === "big") {
+        // Peter: ring på knappen
+        btn.style.pointerEvents = "auto";
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (overlay.classList.contains("show")) return;
+          callNumber(c.phone);
+        });
+      } else {
+        // små: knappen er bare “visuel” (klik håndteres af tile),
+        // men vi understøtter også klik på knappen for nemhed:
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (overlay.classList.contains("show")) return;
+          if (focusedIndex === globalIndex) openConfirm(c);
+          else setFocus(globalIndex);
+        });
+      }
 
       return tile;
     }
 
-    // Byg venstre kolonne
+    // Insert tiles
     left.forEach((c, idx) => {
-      const globalIndex = idx; // 0..3
+      const globalIndex = idx;
       const tile = makeTile(c, globalIndex, "small");
       leftCol.appendChild(tile);
       tileOrder[globalIndex] = tile;
     });
 
-    // Byg center (Peter)
-    const peterGlobalIndex = 4;
     const peterTile = makeTile(peter, peterGlobalIndex, "big");
     centerCol.appendChild(peterTile);
     tileOrder[peterGlobalIndex] = peterTile;
 
-    // Byg højre kolonne
     right.forEach((c, idx) => {
-      const globalIndex = 5 + idx; // 5..8
+      const globalIndex = 5 + idx;
       const tile = makeTile(c, globalIndex, "small");
       rightCol.appendChild(tile);
       tileOrder[globalIndex] = tile;
     });
 
-    let focusedIndex = peterGlobalIndex;
-
     function moveFocusBoxToTile(i){
       const container = layout.getBoundingClientRect();
       const t = tileOrder[i].getBoundingClientRect();
-
-      const pad = 7; // lidt luft rundt om tile
-      const left = (t.left - container.left) - pad;
-      const top  = (t.top  - container.top)  - pad;
-      const width  = t.width  + (pad * 2);
-      const height = t.height + (pad * 2);
-
-      focusBox.style.left = `${left}px`;
-      focusBox.style.top = `${top}px`;
-      focusBox.style.width = `${width}px`;
-      focusBox.style.height = `${height}px`;
+      const pad = 7;
+      focusBox.style.left = `${(t.left - container.left) - pad}px`;
+      focusBox.style.top  = `${(t.top  - container.top ) - pad}px`;
+      focusBox.style.width  = `${t.width  + (pad * 2)}px`;
+      focusBox.style.height = `${t.height + (pad * 2)}px`;
     }
 
     function setFocus(i){
       focusedIndex = i;
       tileOrder.forEach((t, idx) => t.classList.toggle("focused", idx === focusedIndex));
       moveFocusBoxToTile(focusedIndex);
+      scheduleAutoBackIfNeeded();
     }
 
     function setFocusPeter(){
+      closeConfirm(); // hvis prompt stod åben
       setFocus(peterGlobalIndex);
     }
 
     // Initial fokus = Peter
     requestAnimationFrame(() => setFocusPeter());
 
-    // Når man kommer tilbage efter opkald / skifter tilbage til siden:
+    // Tilbage efter opkald / tilbage til siden: hop til Peter
     window.addEventListener("pageshow", () => requestAnimationFrame(() => setFocusPeter()));
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") requestAnimationFrame(() => setFocusPeter());
     });
 
-    // Reposition ved resize/orientation
+    // Reposition ved resize
     window.addEventListener("resize", () => {
       requestAnimationFrame(() => moveFocusBoxToTile(focusedIndex));
     });
