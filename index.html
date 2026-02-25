@@ -21,21 +21,28 @@
       --shadow:0 10px 26px rgba(0,0,0,.35);
 
       --pad:12px;
-
-      /* række / tiles */
-      --tileW:min(20vw, 280px);
-      --tileH:min(72vh, 540px);
       --gap:14px;
 
-      --avatar:220px;
       --radius:22px;
 
-      /* fokus */
-      --focusScale:1.06;
+      /* Fokus */
+      --focusScale:1.03;
       --unfocusOpacity:.55;
 
-      /* “sikkerhed”: ring-knap er kun aktiv når tile er i fokus */
+      /* Ring-knap */
       --btnH:56px;
+      --btnHSmall:48px;
+
+      /* Fokusramme */
+      --focusBorder:5px;
+
+      /* Avatar sizes */
+      --avatarBig:clamp(170px, 26vh, 320px);
+      --avatarSmall:clamp(92px, 12vh, 160px);
+
+      /* Layout */
+      --sideColW: min(420px, 32vw);
+      --centerColW: min(560px, 36vw);
     }
 
     *{box-sizing:border-box}
@@ -84,32 +91,42 @@
       width:100%;
       flex:1;
       display:flex;
-      align-items:center;
+      align-items:stretch;
       justify-content:center;
       overflow:hidden;
     }
 
-    /* Rækken med tiles */
-    .rail{
+    /* 3-kolonne layout: venstre små, midt stor, højre små */
+    .layout{
       position:relative;
-      width:min(1700px, 100%);
-      height:calc(var(--tileH) + 20px);
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      width:min(1600px, 100%);
+      height:100%;
+      display:grid;
+      grid-template-columns: var(--sideColW) var(--centerColW) var(--sideColW);
       gap:var(--gap);
       padding:10px;
-      border-radius:999px;
+      border-radius:28px;
       background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.08);
       box-shadow:0 20px 60px rgba(0,0,0,.25);
-      touch-action:none; /* til drag af fokus-firkanten */
+    }
+
+    .sideCol{
+      display:grid;
+      grid-template-rows:repeat(4, 1fr);
+      gap:var(--gap);
+      min-height:0;
+    }
+
+    .centerCol{
+      display:flex;
+      align-items:stretch;
+      justify-content:center;
+      min-height:0;
     }
 
     .tile{
       position:relative;
-      width:var(--tileW);
-      height:var(--tileH);
       border-radius:var(--radius);
       border:1px solid var(--stroke);
       box-shadow:var(--shadow);
@@ -123,22 +140,36 @@
       overflow:hidden;
 
       opacity:var(--unfocusOpacity);
-      transform:scale(.96);
+      transform:scale(.98);
       filter:saturate(.9);
       transition:transform 220ms ease, opacity 220ms ease, filter 220ms ease;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+      cursor:pointer;
+      min-height:0;
     }
 
     .tile.focused{
       opacity:1;
       transform:scale(var(--focusScale));
       filter:saturate(1.05);
+      cursor:default;
+    }
+
+    .tile.big{
+      padding:16px;
+      justify-content:center;
+      gap:14px;
+    }
+
+    .tile.small{
+      padding:10px 10px 12px;
+      gap:8px;
     }
 
     .avatar{
-      width:var(--avatar);
-      height:var(--avatar);
+      width:var(--avatarSmall);
+      height:var(--avatarSmall);
       border-radius:999px;
       overflow:hidden;
       border:4px solid rgba(255,255,255,.18);
@@ -149,6 +180,10 @@
         0 0 40px color-mix(in srgb, var(--accent) 40%, transparent);
       flex-shrink:0;
     }
+    .tile.big .avatar{
+      width:var(--avatarBig);
+      height:var(--avatarBig);
+    }
     .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
     .meta{
@@ -157,94 +192,76 @@
       margin-top:auto;
       padding:0 8px 4px;
     }
-    .name{margin:0;font-size:24px;font-weight:950}
-    .phone{margin:4px 0 12px;font-size:16px;color:var(--muted)}
+    .tile.big .meta{ margin-top:0; }
+    .name{margin:0;font-size:clamp(18px, 2.2vh, 26px);font-weight:950}
+    .tile.small .name{ font-size:clamp(16px, 2.0vh, 22px); }
+    .phone{margin:4px 0 12px;font-size:clamp(13px, 1.8vh, 16px);color:var(--muted)}
+    .tile.small .phone{ margin:3px 0 10px; font-size:clamp(12px, 1.6vh, 15px); }
 
     /* Ring-knap: kun aktiv i fokus (sikkerhed) */
     .callBtn{
       width:100%;
-      height:var(--btnH);
+      height:var(--btnHSmall);
       border-radius:16px;
       border:1px solid color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,.16));
       background:color-mix(in srgb, var(--accent) 32%, rgba(255,255,255,.10));
       color:#fff;
       font-weight:950;
-      font-size:18px;
+      font-size:16px;
       letter-spacing:.5px;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      cursor:pointer;
       user-select:none;
+
       opacity:.35;
       pointer-events:none; /* default: kan ikke ringe */
       transition:opacity 180ms ease, transform 120ms ease;
+    }
+    .tile.big .callBtn{
+      height:var(--btnH);
+      font-size:18px;
+      border-radius:18px;
     }
     .callBtn:active{ transform:scale(.98); }
     .tile.focused .callBtn{
       opacity:1;
       pointer-events:auto; /* først nu kan man ringe */
+      cursor:pointer;
     }
     .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
 
-    /* Fokus-firkanten (kan trækkes) */
+    /* Fokusramme */
     .focusBox{
       position:absolute;
-      top:50%;
-      transform:translate(-50%,-50%);
-      width:calc(var(--tileW) + 10px);
-      height:calc(var(--tileH) + 10px);
-      border-radius:calc(var(--radius) + 6px);
-      border:3px solid rgba(255,255,255,.85);
+      border-radius:calc(var(--radius) + 10px);
+      border:var(--focusBorder) solid rgba(255,255,255,.92);
       box-shadow:
-        0 0 0 6px rgba(0,0,0,.25),
+        0 0 0 7px rgba(0,0,0,.28),
         0 18px 60px rgba(0,0,0,.45);
       pointer-events:none;
+      transition: left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease;
+      will-change:left,top,width,height;
+      z-index:50;
     }
 
-    .hint{
-      position:absolute;
-      bottom:10px;
-      left:50%;
-      transform:translateX(-50%);
-      font-size:14px;
-      opacity:.6;
-      user-select:none;
-      text-align:center;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      backdrop-filter: blur(8px);
-      max-width:calc(100% - 24px);
+    /* Responsivt: hvis smal skærm, så stack (Peter øverst) */
+    @media (max-width:1100px){
+      .layout{
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .sideCol{ grid-template-rows:repeat(4, auto); }
     }
 
-    /* Små landscape tablets */
     @media (max-height:700px){
       :root{
-        --tileH:min(66vh, 470px);
-        --avatar:200px;
         --btnH:52px;
+        --btnHSmall:44px;
+        --avatarBig:clamp(150px, 24vh, 280px);
+        --avatarSmall:clamp(86px, 11vh, 140px);
       }
-      .name{font-size:22px}
-      .phone{font-size:15px}
-    }
-    @media (max-height:620px){
-      :root{
-        --tileH:min(62vh, 430px);
-        --avatar:185px;
-      }
-    }
-
-    /* Hvis skærmen er meget smal, tillad horisontal scroll */
-    @media (max-width:1100px){
-      .rail{
-        justify-content:flex-start;
-        overflow-x:auto;
-        scrollbar-width:none;
-      }
-      .rail::-webkit-scrollbar{display:none}
     }
   </style>
 </head>
@@ -259,39 +276,63 @@
     </div>
 
     <div class="stage">
-      <div class="rail" id="rail" aria-label="Kontakter">
-        <!-- tiles injected -->
+      <div class="layout" id="layout" aria-label="Kontakter">
+        <div class="sideCol" id="leftCol" aria-label="Venstre kontakter"></div>
+        <div class="centerCol" id="centerCol" aria-label="Peter (center)"></div>
+        <div class="sideCol" id="rightCol" aria-label="Højre kontakter"></div>
+
+        <!-- Fokusramme (ligger ovenpå alt) -->
         <div class="focusBox" id="focusBox" aria-hidden="true"></div>
       </div>
-
-      <div class="hint">Tryk på et billede for fokus • Træk den hvide ramme for at vælge • Ring-knappen virker kun i fokus</div>
     </div>
   </div>
 
   <script>
-    // === DATA (dine 8 kontakter) ===
+    // === DATA (9 kontakter inkl. Inge Boye) ===
     let contacts = [
-      { name:"Peter",  phone:"+4520324378", display:"+45 20 32 43 78", img:"peter.jpg",  accent:"#ffd24a" },
-      { name:"Poula",  phone:"+4521538213", display:"+45 21 53 82 13", img:"poula.jpg",  accent:"#54e6a9" },
-      { name:"Bente",  phone:"+4528223687", display:"+45 28 22 36 87", img:"bente.jpg",  accent:"#6fb7ff" },
-      { name:"Britta", phone:"+4523985223", display:"+45 23 98 52 23", img:"britta.jpg", accent:"#ff7ad9" },
-      { name:"Else",   phone:"+4542769137", display:"+45 42 76 91 37", img:"else.jpg",   accent:"#ff9b54" },
-      { name:"Herdis", phone:"+4521764268", display:"+45 21 76 42 68", img:"herdis.jpg", accent:"#b58cff" },
-      { name:"Hanne",  phone:"+4528965403", display:"+45 28 96 54 03", img:"hanne.jpg",  accent:"#ff4d4d" },
-      { name:"Karen",  phone:"+4541663491", display:"+45 41 66 34 91", img:"karen.jpg",  accent:"#39d0ff" },
+      { name:"Peter",     phone:"+4520324378", display:"+45 20 32 43 78", img:"peter.jpg",     accent:"#ffd24a" },
+      { name:"Poula",     phone:"+4521538213", display:"+45 21 53 82 13", img:"poula.jpg",     accent:"#54e6a9" },
+      { name:"Bente",     phone:"+4528223687", display:"+45 28 22 36 87", img:"bente.jpg",     accent:"#6fb7ff" },
+      { name:"Britta",    phone:"+4523985223", display:"+45 23 98 52 23", img:"britta.jpg",    accent:"#ff7ad9" },
+      { name:"Else",      phone:"+4542769137", display:"+45 42 76 91 37", img:"else.jpg",      accent:"#ff9b54" },
+      { name:"Herdis",    phone:"+4521764268", display:"+45 21 76 42 68", img:"herdis.jpg",    accent:"#b58cff" },
+      { name:"Hanne",     phone:"+4528965403", display:"+45 28 96 54 03", img:"hanne.jpg",     accent:"#ff4d4d" },
+      { name:"Karen",     phone:"+4541663491", display:"+45 41 66 34 91", img:"karen.jpg",     accent:"#39d0ff" },
+      { name:"Inge Boye", phone:"+4522355339", display:"+45 22 35 53 39", img:"ingeboye.jpg",  accent:"#7cff6b" },
     ];
 
-    // ✅ Alfabetisk sortering (dansk/latin) — case-insensitive
-    contacts.sort((a,b) => a.name.localeCompare(b.name, "da", { sensitivity:"base" }));
+    // Find Peter
+    function indexOfPeter(){
+      return Math.max(0, contacts.findIndex(c => c.name.toLowerCase() === "peter"));
+    }
 
-    const rail = document.getElementById("rail");
+    // Træk Peter ud til center og fordel resten alfabetisk i siderne
+    const peterIndex = indexOfPeter();
+    const peter = contacts[peterIndex];
+
+    const others = contacts
+      .filter((_, i) => i !== peterIndex)
+      .sort((a,b) => a.name.localeCompare(b.name, "da", { sensitivity:"base" }));
+
+    // 4 venstre + 4 højre (i alt 8)
+    const left = others.slice(0, 4);
+    const right = others.slice(4, 8);
+
+    const leftCol = document.getElementById("leftCol");
+    const rightCol = document.getElementById("rightCol");
+    const centerCol = document.getElementById("centerCol");
+    const layout = document.getElementById("layout");
     const focusBox = document.getElementById("focusBox");
 
-    const tiles = contacts.map((c, i) => {
+    // Vi laver en samlet liste over tiles i fokus-rækkefølge:
+    // venstre (0-3), Peter (4), højre (5-8)
+    const tileOrder = [];
+
+    function makeTile(c, globalIndex, sizeClass){
       const tile = document.createElement("div");
-      tile.className = "tile";
+      tile.className = `tile ${sizeClass}`;
       tile.style.setProperty("--accent", c.accent);
-      tile.dataset.index = String(i);
+      tile.dataset.index = String(globalIndex);
 
       tile.innerHTML = `
         <div class="avatar"><img src="${c.img}" alt="${c.name}"></div>
@@ -304,93 +345,81 @@
         </div>
       `;
 
-      tile.addEventListener("click", () => setFocus(i), {passive:true});
+      tile.addEventListener("click", () => setFocus(globalIndex), { passive:true });
 
       tile.querySelector(".callBtn").addEventListener("click", (e) => {
         e.stopPropagation();
-        if (focusedIndex === i) location.href = `tel:${c.phone}`;
+        if (focusedIndex === globalIndex) {
+          location.href = `tel:${c.phone}`;
+        }
       });
 
-      rail.insertBefore(tile, focusBox);
       return tile;
-    });
-
-    // Start fokus: Vibeke hvis hun findes, ellers første
-    let focusedIndex = Math.max(0, contacts.findIndex(c => c.name.toLowerCase() === "vibeke"));
-    let isDragging = false;
-    let startX = 0;
-    let startCenterX = 0;
-
-    function tileCenterX(tile){
-      const r = rail.getBoundingClientRect();
-      const t = tile.getBoundingClientRect();
-      return (t.left - r.left) + (t.width / 2);
     }
 
+    // Byg venstre kolonne
+    left.forEach((c, idx) => {
+      const globalIndex = idx; // 0..3
+      const tile = makeTile(c, globalIndex, "small");
+      leftCol.appendChild(tile);
+      tileOrder[globalIndex] = tile;
+    });
+
+    // Byg center (Peter)
+    const peterGlobalIndex = 4;
+    const peterTile = makeTile(peter, peterGlobalIndex, "big");
+    centerCol.appendChild(peterTile);
+    tileOrder[peterGlobalIndex] = peterTile;
+
+    // Byg højre kolonne
+    right.forEach((c, idx) => {
+      const globalIndex = 5 + idx; // 5..8
+      const tile = makeTile(c, globalIndex, "small");
+      rightCol.appendChild(tile);
+      tileOrder[globalIndex] = tile;
+    });
+
+    let focusedIndex = peterGlobalIndex;
+
     function moveFocusBoxToTile(i){
-      const cX = tileCenterX(tiles[i]);
-      focusBox.style.left = `${cX}px`;
+      const container = layout.getBoundingClientRect();
+      const t = tileOrder[i].getBoundingClientRect();
+
+      const pad = 7; // lidt luft rundt om tile
+      const left = (t.left - container.left) - pad;
+      const top  = (t.top  - container.top)  - pad;
+      const width  = t.width  + (pad * 2);
+      const height = t.height + (pad * 2);
+
+      focusBox.style.left = `${left}px`;
+      focusBox.style.top = `${top}px`;
+      focusBox.style.width = `${width}px`;
+      focusBox.style.height = `${height}px`;
     }
 
     function setFocus(i){
       focusedIndex = i;
-      tiles.forEach((t, idx) => t.classList.toggle("focused", idx === focusedIndex));
+      tileOrder.forEach((t, idx) => t.classList.toggle("focused", idx === focusedIndex));
       moveFocusBoxToTile(focusedIndex);
-      tiles[focusedIndex].scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
     }
 
-    function nearestTileIndex(x){
-      let best = 0, bestDist = Infinity;
-      for (let i=0;i<tiles.length;i++){
-        const cx = tileCenterX(tiles[i]);
-        const d = Math.abs(cx - x);
-        if (d < bestDist){ bestDist = d; best = i; }
-      }
-      return best;
+    function setFocusPeter(){
+      setFocus(peterGlobalIndex);
     }
 
-    function railPointerDown(e){
-      isDragging = true;
-      rail.setPointerCapture?.(e.pointerId);
+    // Initial fokus = Peter
+    requestAnimationFrame(() => setFocusPeter());
 
-      const r = rail.getBoundingClientRect();
-      startX = e.clientX;
-      startCenterX = (focusBox.getBoundingClientRect().left - r.left) + (focusBox.getBoundingClientRect().width / 2);
+    // Når man kommer tilbage efter opkald / skifter tilbage til siden:
+    window.addEventListener("pageshow", () => requestAnimationFrame(() => setFocusPeter()));
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") requestAnimationFrame(() => setFocusPeter());
+    });
 
-      const x = e.clientX - r.left;
-      setFocus(nearestTileIndex(x));
-      e.preventDefault?.();
-    }
-
-    function railPointerMove(e){
-      if (!isDragging) return;
-
-      const r = rail.getBoundingClientRect();
-      const dx = e.clientX - startX;
-      let newCenter = startCenterX + dx;
-
-      newCenter = Math.max(0, Math.min(r.width, newCenter));
-      focusBox.style.left = `${newCenter}px`;
-
-      const nearest = nearestTileIndex(newCenter);
-      tiles.forEach((t, idx) => t.classList.toggle("focused", idx === nearest));
-      focusedIndex = nearest;
-    }
-
-    function railPointerUp(){
-      if (!isDragging) return;
-      isDragging = false;
-      setFocus(focusedIndex);
-    }
-
-    rail.addEventListener("pointerdown", railPointerDown, {passive:false});
-    rail.addEventListener("pointermove", railPointerMove, {passive:true});
-    rail.addEventListener("pointerup", railPointerUp, {passive:true});
-    rail.addEventListener("pointercancel", railPointerUp, {passive:true});
-    rail.addEventListener("pointerleave", railPointerUp, {passive:true});
-
-    requestAnimationFrame(() => setFocus(focusedIndex));
-    window.addEventListener("resize", () => requestAnimationFrame(() => moveFocusBoxToTile(focusedIndex)));
+    // Reposition ved resize/orientation
+    window.addEventListener("resize", () => {
+      requestAnimationFrame(() => moveFocusBoxToTile(focusedIndex));
+    });
   </script>
 </body>
 </html>
