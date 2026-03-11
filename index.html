@@ -32,7 +32,6 @@
 
   --focusBorder:5px;
 
-  /* Avatar i Peter-kortet (vi skruer lidt ned når kortet bliver kvadratisk) */
   --avatarBig:clamp(140px, 22vh, 220px);
 
   --sideColW: min(380px, 27vw);
@@ -42,7 +41,6 @@
 
   --quietRed:#ff3b3b;
 
-  /* Header ikon-grupper */
   --groupW: min(260px, 34vw);
 }
 
@@ -66,7 +64,6 @@ body{
   justify-content:flex-start;
 }
 
-/* Header: venstre 3 ikoner, titel, højre 3 ikoner */
 .header{
   width:100%;
   display:grid;
@@ -80,7 +77,7 @@ body{
   width:100%;
   display:flex;
   align-items:center;
-  justify-content:space-between; /* ligeligt fordelt */
+  justify-content:space-between;
   gap:12px;
 }
 .topIcon{
@@ -113,7 +110,6 @@ h1{
   overflow:hidden;
 }
 
-/* 3-kolonne layout */
 .layout{
   position:relative;
   width:min(1600px, 100%);
@@ -140,7 +136,6 @@ h1{
   min-height:0;
 }
 
-/* Tiles */
 .tile{
   position:relative;
   border-radius:var(--radius);
@@ -166,10 +161,6 @@ h1{
   cursor:default;
 }
 
-/* Peter (center) – nu mere kvadratisk:
-   H = ca. 2 rækker i sidekolonne + 1 gap => kan approxes som 50% - gap/2
-   (samme som “H/2 - g/2”)
-*/
 .tile.big{
   height: calc(50% - (var(--gap) / 2));
   aspect-ratio: 1 / 1;
@@ -183,7 +174,6 @@ h1{
   gap:12px;
 }
 
-/* Små sidekort */
 .tile.small{
   padding:10px;
   display:grid;
@@ -192,7 +182,6 @@ h1{
   align-items:stretch;
 }
 
-/* Big avatar */
 .avatarBig{
   width:var(--avatarBig);
   height:var(--avatarBig);
@@ -209,7 +198,6 @@ h1{
 }
 .avatarBig img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* Small photo area */
 .photo{
   border-radius:18px;
   overflow:hidden;
@@ -231,7 +219,6 @@ h1{
   pointer-events:none;
 }
 
-/* Meta */
 .metaBig{
   width:100%;
   text-align:center;
@@ -260,7 +247,6 @@ h1{
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-/* Ring-knap */
 .callBtn{
   width:100%;
   height:var(--btnHSmall);
@@ -291,14 +277,12 @@ h1{
 }
 .tile.focused .callBtn.small{ pointer-events:auto; opacity:1; }
 
-/* Nattero: rød knap */
 .tile.quiet .callBtn.small{
   border-color: rgba(255,60,60,.65) !important;
   background: linear-gradient(180deg, rgba(255,60,60,.35), rgba(255,60,60,.16)) !important;
 }
 .tile.quiet .dot{ background: var(--quietRed) !important; }
 
-/* Fokusramme */
 .focusBox{
   position:absolute;
   border-radius:calc(var(--radius) + 10px);
@@ -310,7 +294,6 @@ h1{
   z-index:50;
 }
 
-/* Overlay (fælles) */
 .overlay{
   position:fixed;
   inset:0;
@@ -333,7 +316,6 @@ h1{
   text-align:center;
 }
 
-/* Confirm overlay */
 .dialogTitle{
   margin:0 0 10px;
   font-weight:1000;
@@ -380,7 +362,6 @@ h1{
   border-color:rgba(255,60,60,.55);
 }
 
-/* Blocked overlay */
 .blockTitle{ margin:0 0 12px; font-weight:1000; letter-spacing:.6px; font-size:clamp(22px, 3.2vw, 44px); text-transform:uppercase; }
 .blockText{ margin:0 0 18px; opacity:.9; font-size:clamp(14px, 2.1vw, 22px); }
 .okRow{ display:flex; justify-content:center; }
@@ -404,7 +385,6 @@ h1{
 }
 .okBtn:active{ transform:scale(.99); }
 
-/* Virtuel ur modal */
 .vclockTitle{
   margin:0 0 10px;
   font-weight:1000;
@@ -481,7 +461,6 @@ h1{
   cursor:pointer;
 }
 
-/* Responsivt */
 @media (max-width:1100px){
   .header{ grid-template-columns: 1fr; gap:8px; }
   .iconGroup{ justify-content:center; width:100%; }
@@ -516,7 +495,6 @@ h1{
       <div class="topIcon"><img src="telefon.png" alt=""></div>
       <div class="topIcon"><img src="telefon.png" alt=""></div>
 
-      <!-- ØVERSTE HØJRE "SKJULT" KNAP: åbner virtuel ur -->
       <div class="topIcon btn" id="clockHeaderBtn" aria-label="Virtuel ur (skjult knap)">
         <img src="telefon.png" alt="">
       </div>
@@ -534,7 +512,6 @@ h1{
   </div>
 </div>
 
-<!-- Confirm overlay -->
 <div class="overlay" id="overlayConfirm" aria-hidden="true">
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
     <p class="dialogTitle" id="dlgTitle">Vil du ringe til</p>
@@ -547,7 +524,6 @@ h1{
   </div>
 </div>
 
-<!-- Blocked overlay -->
 <div class="overlay" id="overlayBlocked" aria-hidden="true">
   <div class="dialog" role="dialog" aria-modal="true">
     <p class="blockTitle">Kan ikke ringes til</p>
@@ -558,7 +534,6 @@ h1{
   </div>
 </div>
 
-<!-- Virtuel ur overlay -->
 <div class="overlay" id="overlayVClock" aria-hidden="true">
   <div class="dialog" role="dialog" aria-modal="true">
     <p class="vclockTitle">Virtuel ur</p>
@@ -577,7 +552,6 @@ h1{
   </div>
 </div>
 
-<!-- Audio til "ingen opkald" -->
 <audio id="blockedAudio" preload="auto" src="ingenopkaldstemme.mp3"></audio>
 
 <script>
@@ -597,8 +571,8 @@ const QUIET_END_MIN   = parseHHMM(QUIET_END);
 /* =========================
    Virtuel ur state
    ========================= */
-const SIM_TIME_KEY = "simTimeHHMM";       // fx "02:00"
-const SIM_ON_KEY   = "simTimeEnabled";    // "1" eller null
+const SIM_TIME_KEY = "simTimeHHMM";
+const SIM_ON_KEY   = "simTimeEnabled";
 
 function getSimTime(){ return localStorage.getItem(SIM_TIME_KEY); }
 function setSimTime(hhmm){ localStorage.setItem(SIM_TIME_KEY, hhmm); }
@@ -630,6 +604,20 @@ function isQuietNow(){
 }
 
 /* =========================
+   Resume-guard mod falske klik
+   ========================= */
+const RESUME_GUARD_MS = 1800;
+let suppressInteractionsUntil = 0;
+
+function armResumeGuard(){
+  suppressInteractionsUntil = Date.now() + RESUME_GUARD_MS;
+}
+
+function interactionsBlocked(){
+  return Date.now() < suppressInteractionsUntil;
+}
+
+/* =========================
    DATA (9 kontakter)
    ========================= */
 let contacts = [
@@ -652,22 +640,18 @@ const centerCol = document.getElementById("centerCol");
 const layout    = document.getElementById("layout");
 const focusBox  = document.getElementById("focusBox");
 
-/* Header “skjult” knap */
 const clockHeaderBtn = document.getElementById("clockHeaderBtn");
 
-/* Confirm overlay */
 const overlayConfirm = document.getElementById("overlayConfirm");
 const dlgName = document.getElementById("dlgName");
 const btnYes  = document.getElementById("btnYes");
 const btnNo   = document.getElementById("btnNo");
 
-/* Blocked overlay + audio */
 const overlayBlocked = document.getElementById("overlayBlocked");
 const blockedText = document.getElementById("blockedText");
 const btnOk = document.getElementById("btnOk");
 const blockedAudio = document.getElementById("blockedAudio");
 
-/* Virtuel ur overlay */
 const overlayVClock = document.getElementById("overlayVClock");
 const vclockStatus = document.getElementById("vclockStatus");
 const vclockTime = document.getElementById("vclockTime");
@@ -675,11 +659,17 @@ const vclockActivate = document.getElementById("vclockActivate");
 const vclockDeactivate = document.getElementById("vclockDeactivate");
 const vclockClose = document.getElementById("vclockClose");
 
+function stopBlockedAudio(){
+  try{
+    blockedAudio.pause();
+    blockedAudio.currentTime = 0;
+  }catch(e){}
+}
+
 function indexOfPeter(){
   return Math.max(0, contacts.findIndex(c => c.name.toLowerCase() === "peter"));
 }
 
-/* Træk Peter ud til center og fordel resten alfabetisk i siderne */
 const peterIndex = indexOfPeter();
 const peter = contacts[peterIndex];
 const others = contacts
@@ -689,12 +679,10 @@ const others = contacts
 const left  = others.slice(0, 4);
 const right = others.slice(4, 8);
 
-/* Fokus rækkefølge: venstre (0-3), Peter (4), højre (5-8) */
 const tileOrder = [];
 const peterGlobalIndex = 4;
 let focusedIndex = peterGlobalIndex;
 
-/* Auto-retur timer */
 let autoBackTimer = null;
 function clearAutoBack(){
   if (autoBackTimer) { clearTimeout(autoBackTimer); autoBackTimer = null; }
@@ -710,7 +698,6 @@ function scheduleAutoBackIfNeeded(){
   }
 }
 
-/* Overlay confirm state */
 let pendingCall = null;
 
 function openConfirm(c){
@@ -720,14 +707,13 @@ function openConfirm(c){
   overlayConfirm.setAttribute("aria-hidden", "false");
   clearAutoBack();
 }
-function closeConfirm(){
+function closeConfirm(skipAutoBack = false){
   pendingCall = null;
   overlayConfirm.classList.remove("show");
   overlayConfirm.setAttribute("aria-hidden", "true");
-  scheduleAutoBackIfNeeded();
+  if (!skipAutoBack) scheduleAutoBackIfNeeded();
 }
 
-/* Blocked */
 function playBlockedMp3(){
   try{
     blockedAudio.currentTime = 0;
@@ -736,19 +722,20 @@ function playBlockedMp3(){
   }catch(e){}
 }
 function openBlocked(message){
+  if (interactionsBlocked()) return;
   blockedText.textContent = message || "Kan ikke ringes til i dette tidsrum.";
   overlayBlocked.classList.add("show");
   overlayBlocked.setAttribute("aria-hidden", "false");
   clearAutoBack();
   playBlockedMp3();
 }
-function closeBlocked(){
+function closeBlocked(skipAutoBack = false){
   overlayBlocked.classList.remove("show");
   overlayBlocked.setAttribute("aria-hidden", "true");
-  scheduleAutoBackIfNeeded();
+  stopBlockedAudio();
+  if (!skipAutoBack) scheduleAutoBackIfNeeded();
 }
 
-/* Virtuel ur overlay */
 function refreshVClockUI(){
   const enabled = isSimEnabled();
   const t = getSimTime() || "02:00";
@@ -763,25 +750,23 @@ function openVClock(){
   overlayVClock.setAttribute("aria-hidden", "false");
   clearAutoBack();
 }
-function closeVClock(){
+function closeVClock(skipAutoBack = false){
   overlayVClock.classList.remove("show");
   overlayVClock.setAttribute("aria-hidden", "true");
-  scheduleAutoBackIfNeeded();
+  if (!skipAutoBack) scheduleAutoBackIfNeeded();
 }
 
-/* Tel */
 function callNumber(phone){
+  armResumeGuard();
   location.href = `tel:${phone}`;
 }
 
-/* Helpers: er kontakt låst lige nu? */
 function isLockedContact(c){
   if (!c) return false;
   if (c.name.toLowerCase() === "peter") return false;
   return isQuietNow();
 }
 
-/* Close overlays by clicking outside */
 overlayConfirm.addEventListener("click", (e) => { if (e.target === overlayConfirm) closeConfirm(); });
 overlayBlocked.addEventListener("click", (e) => { if (e.target === overlayBlocked) closeBlocked(); });
 overlayVClock.addEventListener("click", (e) => { if (e.target === overlayVClock) closeVClock(); });
@@ -790,7 +775,7 @@ btnNo.addEventListener("click", closeConfirm);
 btnYes.addEventListener("click", () => {
   if (!pendingCall) return;
   const phone = pendingCall.phone;
-  closeConfirm();
+  closeConfirm(true);
   callNumber(phone);
 });
 btnOk.addEventListener("click", closeBlocked);
@@ -809,10 +794,10 @@ vclockDeactivate.addEventListener("click", () => {
   updateQuietUI();
 });
 
-/* Skjult knap i øverste højre ikon */
 clockHeaderBtn.addEventListener("click", (e) => {
   e.preventDefault();
   e.stopPropagation();
+  if (interactionsBlocked()) return;
   if (overlayConfirm.classList.contains("show")) return;
   if (overlayBlocked.classList.contains("show")) return;
   if (overlayVClock.classList.contains("show")) return;
@@ -851,6 +836,8 @@ function makeTile(c, globalIndex, sizeClass){
   }
 
   function attemptCallOrMessage(){
+    if (interactionsBlocked()) return;
+
     if (isLockedContact(c)) {
       openBlocked(`Kan ikke ringes til i tidsrummet ${QUIET_START}–${QUIET_END}.`);
       return;
@@ -863,6 +850,7 @@ function makeTile(c, globalIndex, sizeClass){
   }
 
   tile.addEventListener("click", () => {
+    if (interactionsBlocked()) return;
     if (overlayConfirm.classList.contains("show")) return;
     if (overlayBlocked.classList.contains("show")) return;
     if (overlayVClock.classList.contains("show")) return;
@@ -880,6 +868,7 @@ function makeTile(c, globalIndex, sizeClass){
     btn.style.pointerEvents = "auto";
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
+      if (interactionsBlocked()) return;
       if (overlayConfirm.classList.contains("show")) return;
       if (overlayBlocked.classList.contains("show")) return;
       if (overlayVClock.classList.contains("show")) return;
@@ -888,6 +877,7 @@ function makeTile(c, globalIndex, sizeClass){
   } else {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
+      if (interactionsBlocked()) return;
       if (overlayConfirm.classList.contains("show")) return;
       if (overlayBlocked.classList.contains("show")) return;
       if (overlayVClock.classList.contains("show")) return;
@@ -900,7 +890,6 @@ function makeTile(c, globalIndex, sizeClass){
   return tile;
 }
 
-/* Insert tiles */
 left.forEach((c, idx) => {
   const globalIndex = idx;
   const tile = makeTile(c, globalIndex, "small");
@@ -919,7 +908,6 @@ right.forEach((c, idx) => {
   tileOrder[globalIndex] = tile;
 });
 
-/* Focus box + focus logic */
 function moveFocusBoxToTile(i){
   const container = layout.getBoundingClientRect();
   const t = tileOrder[i].getBoundingClientRect();
@@ -936,13 +924,12 @@ function setFocus(i){
   scheduleAutoBackIfNeeded();
 }
 function setFocusPeter(){
-  closeConfirm();
-  closeBlocked();
-  closeVClock();
+  closeConfirm(true);
+  closeBlocked(true);
+  closeVClock(true);
   setFocus(peterGlobalIndex);
 }
 
-/* Nattero UI */
 function updateQuietUI(){
   const quiet = isQuietNow();
   tileOrder.forEach((tile) => {
@@ -962,30 +949,32 @@ function updateQuietUI(){
   });
 }
 
-/* Init */
+function handleResume(){
+  armResumeGuard();
+  stopBlockedAudio();
+  requestAnimationFrame(() => {
+    setFocusPeter();
+    refreshVClockUI();
+    updateQuietUI();
+  });
+}
+
 requestAnimationFrame(() => {
-  setFocusPeter();
-  refreshVClockUI();
-  updateQuietUI();
+  handleResume();
 });
 
-/* Opdater UI jævnligt */
 setInterval(updateQuietUI, 30 * 1000);
 
-window.addEventListener("pageshow", () => requestAnimationFrame(() => {
-  setFocusPeter();
-  refreshVClockUI();
-  updateQuietUI();
-}));
+window.addEventListener("pageshow", handleResume);
+
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
-    requestAnimationFrame(() => {
-      setFocusPeter();
-      refreshVClockUI();
-      updateQuietUI();
-    });
+    handleResume();
   }
 });
+
+window.addEventListener("focus", handleResume);
+
 window.addEventListener("resize", () => {
   requestAnimationFrame(() => moveFocusBoxToTile(focusedIndex));
 });
